@@ -1,0 +1,35 @@
+{
+  "name": "trendify",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Ecommerce website",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiru381/Trendify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chiru381/Trendify/issues"
+  },
+  "homepage": "https://github.com/chiru381/Trendify#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mailgun-js": "^0.22.0",
+    "mongoose": "^8.10.1",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.8.1",
+    "stripe": "^17.6.0"
+  }
+}

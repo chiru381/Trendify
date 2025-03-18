@@ -12,12 +12,10 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     const pageSize = 3;
     const page = Number(req.query.pageNumber) || 1;
-    console.log(pageSize, page, '...page size1')
     const name = req.query.name || '';
     const category = req.query.category || '';
     const seller = req.query.seller || '';
     const order = req.query.order || '';
-    console.log(name, category, seller, order, '.....1')
     const min =
       req.query.min && Number(req.query.min) !== 0 ? Number(req.query.min) : 0;
     const max =
@@ -26,14 +24,12 @@ productRouter.get(
       req.query.rating && Number(req.query.rating) !== 0
         ? Number(req.query.rating)
         : 0;
-        console.log(min, max, rating, '.....2')
 
     const nameFilter = name ? { name: { $regex: name, $options: 'i' } } : {};
     const sellerFilter = seller ? { seller } : {};
     const categoryFilter = category ? { category } : {};
     const priceFilter = min && max ? { price: { $gte: min, $lte: max } } : {};
     const ratingFilter = rating ? { rating: { $gte: rating } } : {};
-    console.log(nameFilter, sellerFilter, categoryFilter, priceFilter, ratingFilter, '.....3')
     const sortOrder =
       order === 'lowest'
         ? { price: 1 }
@@ -42,7 +38,6 @@ productRouter.get(
         : order === 'toprated'
         ? { rating: -1 }
         : { _id: -1 };
-        console.log(sortOrder, '....4')
 
     // ✅ Corrected: Use countDocuments() instead of count()
     const count = await Product.countDocuments({
@@ -52,7 +47,6 @@ productRouter.get(
       ...priceFilter,
       ...ratingFilter,
     });
-    console.log(count, '...count5')
 
     const products = await Product.find({
       ...sellerFilter,
@@ -65,7 +59,6 @@ productRouter.get(
       .sort(sortOrder)
       .skip(pageSize * (page - 1))
       .limit(pageSize);
-    console.log(products, 'products 6')
     res.send({ products, page, pages: Math.ceil(count / pageSize) });
   })
 );
@@ -165,8 +158,8 @@ productRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {
-      const deleteProduct = await product.remove();
-      res.send({ message: 'Product Deleted', product: deleteProduct });
+      await product.deleteOne(); 
+      res.send({ message: 'Product Deleted', product });
     } else {
       res.status(404).send({ message: 'Product Not Found' });
     }

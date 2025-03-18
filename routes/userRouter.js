@@ -130,7 +130,7 @@ userRouter.delete(
         res.status(400).send({ message: 'Can Not Delete Admin User' });
         return;
       }
-      const deleteUser = await user.remove();
+      const deleteUser = await user.deleteOne({ _id: user._id });
       res.send({ message: 'User Deleted', user: deleteUser });
     } else {
       res.status(404).send({ message: 'User Not Found' });

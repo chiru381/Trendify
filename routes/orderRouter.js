@@ -9,6 +9,7 @@ import {
   isSellerOrAdmin,
   mailgun,
   payOrderEmailTemplate,
+  protect,
 } from '../utils.js';
 
 const orderRouter = express.Router();
@@ -84,6 +85,7 @@ orderRouter.get(
 orderRouter.post(
   '/',
   isAuth,
+  protect,
   expressAsyncHandler(async (req, res) => {
     if (req.body.orderItems.length === 0) {
       res.status(400).send({ message: 'Cart is empty' });
@@ -176,8 +178,8 @@ orderRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
-      const deleteOrder = await order.remove();
-      res.send({ message: 'Order Deleted', order: deleteOrder });
+      await order.deleteOne(); 
+      res.send({ message: 'Order Deleted', order });
     } else {
       res.status(404).send({ message: 'Order Not Found' });
     }

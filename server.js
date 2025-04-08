@@ -10,6 +10,9 @@ import productRouter from './routes/productRouter.js';
 import userRouter from './routes/userRouter.js';
 import orderRouter from './routes/orderRouter.js';
 import uploadRouter from './routes/uploadRouter.js';
+import { logger } from './logger.js';
+import swaggerUI from "swagger-ui-express"
+import SwaggerDocument from './swagger.json' with { type: "json" };
 
 import Stripe from "stripe";
 const stripe = new Stripe('sk_test_51QOx3bSBnvO09ua3ly0HRXaliBlhWVq1eFyXdIH9ehh14Rhcb3XznBEOq4DSFDQ3XCOKNabMqheEAg7TC7QoUBvq008JuKo5IC');
@@ -19,13 +22,20 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(SwaggerDocument));
 
 mongoose.connect('mongodb://0.0.0.0:27017/trend',  {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-  .then(() => console.log('MongoDB - Connected Successfully'))
-  .catch(err => console.log(err));
+  .then(() => {
+    console.log('MongoDB - Connected Successfully')
+    logger.info("MongoDB - Connected Successfully")
+  } )
+  .catch(err => {
+    console.log(err)
+    logger.error("MongoDB Connection Error: ", err)
+  } );
 
   app.use(cors({
     origin: 'http://localhost:3000',  // Frontend URL
@@ -163,6 +173,7 @@ io.on('connection', (socket) => {
 
 httpServer.listen(port, () => {
   console.log(`Serve at http://localhost:${port}`);
+  logger.info(`Server Running on Port Number ... ${port}`);
 });
 
 // app.listen(port, () => {

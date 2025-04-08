@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mg from 'mailgun-js';
+import nodemailer from "nodemailer"
 
 export const generateToken = (user) => {
   return jwt.sign(
@@ -144,3 +145,29 @@ export const protect = (req, res, next) => {
   }
 };
 
+export const sendEmail = async (email, subject, text, link, otp_code) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "gmail",
+      service: "gmail",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "chirukosanam123@gmail.com",
+        pass: "xxhrvvaakgwryfzi",
+      },
+    });
+
+    await transporter.sendMail({
+      from: "chirukosanam123@gmail.com",
+      to: email,
+      subject: subject,
+      text: text,
+      html: `<h1>${subject}</h1><p>${text}</p>`,
+    });
+
+    console.log("email sent sucessfully", email);
+  } catch (error) {
+    console.log(error, email, "email not sent");
+  }
+};

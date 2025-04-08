@@ -3,7 +3,7 @@ import expressAsyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 import data from '../data.js';
 import User from '../models/userModel.js';
-import { generateToken, isAdmin, isAuth } from '../utils.js';
+import { generateToken, isAdmin, isAuth, sendEmail } from '../utils.js';
 
 const userRouter = express.Router();
 
@@ -51,18 +51,39 @@ userRouter.post(
 userRouter.post(
   '/register',
   expressAsyncHandler(async (req, res) => {
+    const { name, email, password } = req.body;
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      res.status(400).send({ message: "User already exists" });
+      return;
+    }
     const user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 8),
+      name,
+      email,
+      password: bcrypt.hashSync(password, 8),
     });
     const createdUser = await user.save();
+
+    try {
+      await sendEmail(
+        email,
+        "Welcome to Trendify App!",
+         `Hi ${name}, your registration was successful.`
+      );
+       await sendEmail(
+        "chirukosanam123@gmail.com",
+        "New User Registered",
+        `A new user has registered.\n\nName: ${name}\nEmail: ${email}`
+      );
+    } catch (e) {
+      console.error("Failed to send email:", e.message);
+    }
     res.send({
       _id: createdUser._id,
       name: createdUser.name,
       email: createdUser.email,
       isAdmin: createdUser.isAdmin,
-      isSeller: user.isSeller,
+      isSeller: createdUser.isSeller,
       token: generateToken(createdUser),
     });
   })

@@ -12,7 +12,7 @@ export default function PlaceOrderScreen() {
 
   const cart = useSelector((state) => state.cart);
 
-  const userSignin = useSelector((state) => state.user);
+  // const userSignin = useSelector((state) => state.user);
 
   // ✅ Ensure `userInfo` is defined
   const userInfo = localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")) : null;

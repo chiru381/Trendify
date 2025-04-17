@@ -32,6 +32,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import SupportScreen from './screens/SupportScreen';
 import ChatBox from './components/ChatBox';
 import StripePaymentScreen  from './screens/StripePaymentScreen';
+import EmployeeScreen from './screens/EmployeeScreen';
 
 function App() {
   const cart = useSelector((state) => state.cart);
@@ -191,6 +192,7 @@ function App() {
             <Route path="/stripe-payment" element={<StripePaymentScreen />}></Route>
             <Route path="/placeorder" element={<PlaceOrderScreen />}></Route>
             <Route path="/order/:id" element={<OrderScreen />}></Route>
+            <Route path="/emp" element={<EmployeeScreen />}></Route>
             <Route
               path="/orderhistory"
               element={<OrderHistoryScreen />}

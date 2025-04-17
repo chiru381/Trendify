@@ -2,6 +2,8 @@ import http from 'http';
 import { Server } from 'socket.io';
 import express from 'express';
 import mongoose from 'mongoose';
+import multer from 'multer';
+import fs from 'fs';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
@@ -10,6 +12,8 @@ import productRouter from './routes/productRouter.js';
 import userRouter from './routes/userRouter.js';
 import orderRouter from './routes/orderRouter.js';
 import uploadRouter from './routes/uploadRouter.js';
+import employeeRouter from './routes/employeeRouter.js'
+import Employee from './models/employeeModel.js'
 import { logger } from './logger.js';
 import swaggerUI from "swagger-ui-express"
 import SwaggerDocument from './swagger.json' with { type: "json" };
@@ -95,6 +99,49 @@ app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
+});
+app.use(express.static('public/uploads'));
+app.use('/api', employeeRouter);
+
+//emp
+const uploadDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'public/uploads');
+  },
+  filename: function (req, file, cb) {
+      cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/api/employees', upload.single('image'), async (req, res) => {
+  try {
+      const employee = new Employee({
+        employeeName: req.body.employeeName,
+        designation: req.body.designation,
+        dateOfBirth: req.body.dateOfBirth,
+        yearsOfExperience: req.body.yearsOfExperience,
+        reportingManager: req.body.reportingManager,
+        employeeImage: req.file.filename,
+      });
+      await employee.save();
+      res.send('Employee Details submitted successfully');
+  } catch (err) {
+      res.status(400).send(err.message);
+  }
+});
+app.get('/api/images', async (req, res) => {
+  try {
+      const images = await Employee.find();
+      res.send(images);
+  } catch (err) {
+      res.status(400).send(err.message);
+  }
 });
 
 const port = process.env.PORT || 8000;
